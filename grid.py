@@ -16,7 +16,12 @@ row3 = np.hstack(images[6:9])
 
 grid = np.vstack([row1, row2, row3])
 
-# Affichage
+def draw_circle(event,x,y,flags,param):
+    if event == cv2.EVENT_LBUTTONUP:
+        print(x,y)
+
+cv2.namedWindow('CAPTCHA Grid')
+cv2.setMouseCallback('CAPTCHA Grid',draw_circle)
 cv2.imshow("CAPTCHA Grid", grid)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
