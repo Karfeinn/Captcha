@@ -18,7 +18,7 @@ for i, image in enumerate(test) :
         animal = re.sub(r'^\d+', '', nom_sans_ext)                
 
         # on met le nom de l'animal ou décor en nom de sortie
-        fichier_sortie = f"./out/{animal}/image_{i:03}_{animal}.png"
+        fichier_sortie = f"./out/image_{i:03}_{animal}.png"
 
 
         valeur_sortie = cv2.imwrite(fichier_sortie, img)
