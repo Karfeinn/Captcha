@@ -4,7 +4,7 @@ import numpy as np
 import random
 
 # Charger toutes les images disponibles
-all_images = glob.glob("./Images/oiseau/resize/*.png")
+all_images = glob.glob("./out2/*.png")
 
 # Séparer les images contenant "oiseau" à la fin du nom
 oiseau_images = [img for img in all_images if img.endswith("oiseau.png")]
