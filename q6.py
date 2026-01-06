@@ -3,36 +3,80 @@ import glob
 import numpy as np
 import random
 
-# Charger toutes les images disponibles
-all_images = glob.glob("./out2/*.png")
+filepath = "./out2"
+nb_col = 3
+nb_row = 3
+img_size = 150
 
-# Séparer les images contenant "oiseau" à la fin du nom
-oiseau_images = [img for img in all_images if img.endswith("oiseau.png")]
-other_images = [img for img in all_images if img not in oiseau_images]
+def choose_images(filepath:str, nb_col:int, nb_row:int) -> list:
+    """
+    A function that create a list of nb_row*nb_col images
+    
+    :param filepath: file path where images are stored
+    :type filepath: str
+    
+    :param nb_col: number of column in the final grid
+    :type nb_col: int
+    
+    :param nb_row: number of row in the final grid
+    :type nb_row: int
+    
+    :return: a list of nb_row*nb_col images path
+    :rtype: list
+    """
+    nb_images = nb_col * nb_row
+    # Take all images in the 
+    images = glob.glob(filepath + "/*.png")
+    
+    if not images:
+        raise ValueError("No images found in the folder")
+    if len(images) < nb_images:
+        raise ValueError("Not enough images in the folder for the grid")
+    
+    # Select randomly nb_row*nb_col images
+    selected_images = random.sample(images, nb_images)
+    return selected_images
 
-if not oiseau_images:
-    raise ValueError("Aucune image avec 'oiseau' à la fin trouvée !")
+def create_grid(images_list:list, nb_col:int, nb_row:int, img_size) -> None:
+    """
+    A function that display a grid with images inside we have to select images of birds
+    
+    :param images_list: List of images path to build the grid
+    :type images_list: list
+    """
+    # Read images from images_list
+    images = [cv2.imread(img) for img in images_list]
 
-# Sélectionner 8 images aléatoires parmi les autres
-selected_images = random.sample(other_images, 8)
+    # Build the grid
+    row_list = []
+    for i in range(0, len(images), nb_col):
+        row = np.hstack(images[i:i + nb_col])
+        row_list.append(row)
 
-# Ajouter au moins 1 image avec "oiseau" à la fin
-selected_images.append(random.choice(oiseau_images))
+    grid = np.vstack(row_list)
 
-# Mélanger pour ne pas avoir l'image 'oiseau' toujours à la même position
-random.shuffle(selected_images)
+    coord_dict = create_coord_dict(images_list, nb_col, nb_row, img_size)
 
-# Charger les images
-images = [cv2.imread(img) for img in selected_images]
+    # display grid
+    cv2.namedWindow('CAPTCHA')
+    cv2.setMouseCallback('CAPTCHA',clic_event, coord_dict)
+    cv2.imshow("CAPTCHA", grid)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
-# Construire la grille (3 lignes, 3 colonnes)
-row1 = np.hstack(images[0:3])
-row2 = np.hstack(images[3:6])
-row3 = np.hstack(images[6:9])
+def create_coord_dict(images_list:list, nb_col:int, nb_row:int, img_size:int):
+    coord_dict = {}
+    for i in range(nb_row):
+        for j in range(nb_col):
+            coord_dict[((j*img_size, i*img_size),((j+1)*img_size,(i+1)*img_size))] = images_list[i*3+j]
+    return coord_dict
 
-grid = np.vstack([row1, row2, row3])
+def clic_event(event,x,y,flags,param):
+    if event == cv2.EVENT_LBUTTONUP:
+        for coord in param:
+            if coord[0][0] < x < coord[1][0] and coord[0][1] < y < coord[1][1]:
+                print(param[coord])
+                break
 
-# Affichage
-cv2.imshow("CAPTCHA Grid", grid)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+images_list = choose_images(filepath, nb_col, nb_row)
+create_grid(images_list, nb_col, nb_row, img_size)

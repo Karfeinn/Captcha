@@ -1,6 +1,7 @@
 import cv2
 import glob
 import numpy as np
+import random
 
 images_path = [(f"./Images/oiseau/resize/fichier_00{i}_resize.png") for i in range(9)]
 images = [cv2.imread(path) for path in images_path]
@@ -25,7 +26,7 @@ dict_img = {
 
 dict_activate = {}
 
-def draw_circle(event,x,y,flags,param):
+def clic_event(event,x,y,flags,param):
     if event == cv2.EVENT_LBUTTONUP:
         for coord in dict_img:
             if coord[0][0] < x < coord[1][0] and coord[0][1] < y < coord[1][1]:
@@ -35,7 +36,7 @@ def draw_circle(event,x,y,flags,param):
                     dict_activate[dict_img[coord]] = 0
 
 cv2.namedWindow('CAPTCHA Grid')
-cv2.setMouseCallback('CAPTCHA Grid',draw_circle)
+cv2.setMouseCallback('CAPTCHA Grid',clic_event)
 cv2.imshow("CAPTCHA Grid", grid)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
