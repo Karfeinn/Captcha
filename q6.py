@@ -56,10 +56,10 @@ def create_grid(images_list:list, nb_col:int, nb_row:int, img_size) -> None:
     grid = np.vstack(row_list)
 
     coord_dict = create_coord_dict(images_list, nb_col, nb_row, img_size)
-
+    params = {"grid": grid, "dict":coord_dict}
     # display grid
     cv2.namedWindow('CAPTCHA')
-    cv2.setMouseCallback('CAPTCHA',clic_event, coord_dict)
+    cv2.setMouseCallback('CAPTCHA',clic_event, params)
     cv2.imshow("CAPTCHA", grid)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -73,9 +73,11 @@ def create_coord_dict(images_list:list, nb_col:int, nb_row:int, img_size:int):
 
 def clic_event(event,x,y,flags,param):
     if event == cv2.EVENT_LBUTTONUP:
-        for coord in param:
+        for coord in param["dict"]:
             if coord[0][0] < x < coord[1][0] and coord[0][1] < y < coord[1][1]:
-                print(param[coord])
+                cv2.rectangle(param["grid"], (coord[0][0],coord[0][1]), (coord[1][0],coord[1][1]), (255,0,0), 5)
+                print(param["dict"][coord])
+                cv2.imshow("CAPTCHA", param["grid"])
                 break
 
 images_list = choose_images(filepath, nb_col, nb_row)
