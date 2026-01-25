@@ -2,11 +2,12 @@ import cv2
 import glob
 import numpy as np
 import random
+import bdd
 
 filepath = "./out2"
 nb_col = 3
 nb_row = 3
-img_size = 150
+img_size = 300
 
 def choose_images(filepath:str, nb_col:int, nb_row:int) -> list:
     """
@@ -78,7 +79,7 @@ def clic_event(event,x,y,flags,param):
         for coord in param["coord_dict"]:
             if coord[0][0] < x < coord[1][0] and coord[0][1] < y < coord[1][1]:
                 if param["images_dict"][param["coord_dict"][coord]] == 0:
-                    cv2.rectangle(param["grid"], (coord[0][0] + 5 ,coord[0][1] + 5), (coord[1][0] - 5,coord[1][1] - 5), (255,247,216), 5)
+                    cv2.rectangle(param["grid"], (coord[0][0] + 5 ,coord[0][1] + 5), (coord[1][0] - 5,coord[1][1] - 5), (255,147,116), 5)
                     param["images_dict"][param["coord_dict"][coord]] = 1
                     cv2.imshow("CAPTCHA", param["grid"])
                     break
@@ -91,4 +92,4 @@ def clic_event(event,x,y,flags,param):
 images_list = choose_images(filepath, nb_col, nb_row)
 images_dict = {image:0 for image in images_list}
 create_grid(images_list, nb_col, nb_row, img_size, images_dict)
-print(images_dict)
+bdd.insert_events(images_dict)
