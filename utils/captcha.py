@@ -3,6 +3,7 @@ import glob
 import numpy as np
 import random
 import utils.bdd as bdd
+import os
 
 def choose_images(filepath:str, nb_col:int, nb_row:int, ponderation) -> list:
     """
@@ -21,8 +22,12 @@ def choose_images(filepath:str, nb_col:int, nb_row:int, ponderation) -> list:
     :rtype: list
     """
     nb_images = nb_col * nb_row
+
+    extensions = ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp", "*.webp"]
     # Take all images in the folder
-    images = glob.glob(filepath + "/*.png")
+    images = []
+    for ext in extensions:
+        images.extend(glob.glob(os.path.join(filepath, ext)))
     
     if not images:
         raise ValueError("No images found in the folder")

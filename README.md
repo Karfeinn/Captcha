@@ -21,7 +21,7 @@ les affiche sous forme de grille (type CAPTCHA)
 La personnalisation se fait directement dans main.py grâce aux variables suivantes :
 
 ```python
-filepath = "./images"  # Dossier contenant les images
+filepath = "./images"  # Chemin vers le dossier contenant les images
 nb_col = 3             # Nombre de colonnes de la grille
 nb_row = 3             # Nombre de lignes de la grille
 img_size = 150         # Taille des images (en pixels)
