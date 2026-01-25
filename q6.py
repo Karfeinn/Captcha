@@ -37,7 +37,7 @@ def choose_images(filepath:str, nb_col:int, nb_row:int) -> list:
     selected_images = random.sample(images, nb_images)
     return selected_images
 
-def create_grid(images_list:list, nb_col:int, nb_row:int, img_size) -> None:
+def create_grid(images_list:list, nb_col:int, nb_row:int, img_size:int, images_dict:dict) -> None:
     """
     A function that display a grid with images inside we have to select images of birds
     
@@ -45,7 +45,7 @@ def create_grid(images_list:list, nb_col:int, nb_row:int, img_size) -> None:
     :type images_list: list
     """
     # Read images from images_list
-    images = [cv2.imread(img) for img in images_list]
+    images = [cv2.resize(cv2.imread(img), dsize=[img_size, img_size]) for img in images_list]
 
     # Build the grid
     row_list = []
@@ -56,10 +56,12 @@ def create_grid(images_list:list, nb_col:int, nb_row:int, img_size) -> None:
     grid = np.vstack(row_list)
 
     coord_dict = create_coord_dict(images_list, nb_col, nb_row, img_size)
-    params = {"grid": grid, "dict":coord_dict}
+    params = {"grid": grid, "coord_dict":coord_dict, "images_dict":images_dict}
     # display grid
     cv2.namedWindow('CAPTCHA')
     cv2.setMouseCallback('CAPTCHA',clic_event, params)
+    for coord in coord_dict:
+        cv2.rectangle(grid, (coord[0][0] + 3 ,coord[0][1] + 3), (coord[1][0] - 3,coord[1][1] - 3), (255,255,255), 7)
     cv2.imshow("CAPTCHA", grid)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -73,12 +75,20 @@ def create_coord_dict(images_list:list, nb_col:int, nb_row:int, img_size:int):
 
 def clic_event(event,x,y,flags,param):
     if event == cv2.EVENT_LBUTTONUP:
-        for coord in param["dict"]:
+        for coord in param["coord_dict"]:
             if coord[0][0] < x < coord[1][0] and coord[0][1] < y < coord[1][1]:
-                cv2.rectangle(param["grid"], (coord[0][0],coord[0][1]), (coord[1][0],coord[1][1]), (255,0,0), 5)
-                print(param["dict"][coord])
-                cv2.imshow("CAPTCHA", param["grid"])
-                break
+                if param["images_dict"][param["coord_dict"][coord]] == 0:
+                    cv2.rectangle(param["grid"], (coord[0][0] + 5 ,coord[0][1] + 5), (coord[1][0] - 5,coord[1][1] - 5), (255,247,216), 5)
+                    param["images_dict"][param["coord_dict"][coord]] = 1
+                    cv2.imshow("CAPTCHA", param["grid"])
+                    break
+                elif param["images_dict"][param["coord_dict"][coord]] == 1:
+                    cv2.rectangle(param["grid"], (coord[0][0] + 5 ,coord[0][1] + 5), (coord[1][0] - 5,coord[1][1] - 5), (255,255,255), 5)
+                    param["images_dict"][param["coord_dict"][coord]] = 0
+                    cv2.imshow("CAPTCHA", param["grid"])
+                    break
 
 images_list = choose_images(filepath, nb_col, nb_row)
-create_grid(images_list, nb_col, nb_row, img_size)
+images_dict = {image:0 for image in images_list}
+create_grid(images_list, nb_col, nb_row, img_size, images_dict)
+print(images_dict)
