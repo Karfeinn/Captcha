@@ -7,7 +7,9 @@ import bdd
 filepath = "./out2"
 nb_col = 3
 nb_row = 3
-img_size = 300
+img_size = 150
+
+PONDERATION = dict(bdd.get_display_count())
 
 def choose_images(filepath:str, nb_col:int, nb_row:int) -> list:
     """
@@ -26,7 +28,7 @@ def choose_images(filepath:str, nb_col:int, nb_row:int) -> list:
     :rtype: list
     """
     nb_images = nb_col * nb_row
-    # Take all images in the 
+    # Take all images in the folder
     images = glob.glob(filepath + "/*.png")
     
     if not images:
@@ -34,8 +36,31 @@ def choose_images(filepath:str, nb_col:int, nb_row:int) -> list:
     if len(images) < nb_images:
         raise ValueError("Not enough images in the folder for the grid")
     
+    weights = []
+    for img in images:
+        count = PONDERATION.get(img, 0)
+        weight = 1 / (1 + count)
+        weights.append(weight)
+
     # Select randomly nb_row*nb_col images
-    selected_images = random.sample(images, nb_images)
+    selected_images = []
+    available_images = images.copy()
+    available_weights = weights.copy()
+
+    for _ in range(nb_images):
+        chosen = random.choices(
+            available_images,
+            weights=available_weights,
+            k=1
+        )[0]
+
+        idx = available_images.index(chosen)
+        selected_images.append(chosen)
+
+        # Remove chosen image (no replacement)
+        available_images.pop(idx)
+        available_weights.pop(idx)
+
     return selected_images
 
 def create_grid(images_list:list, nb_col:int, nb_row:int, img_size:int, images_dict:dict) -> None:

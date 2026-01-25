@@ -33,4 +33,19 @@ def insert_events(images_dict, db_path="./captcha.duckdb"):
     con.close()
     print("Insertion dans la DB terminée.")
 
+def get_display_count(db_path="./captcha.duckdb"):
+    con = duckdb.connect(db_path)
+
+    # --- Créer la table si elle n'existe pas ---
+    con.execute("""
+    CREATE TABLE IF NOT EXISTS captcha_event (
+        image_name VARCHAR PRIMARY KEY,
+        display_count INT,
+        selected_count INT,
+    );
+    """)
+
+    select = con.execute("SELECT image_name, display_count FROM captcha_event").fetchall()
+
+    return(select)
 
