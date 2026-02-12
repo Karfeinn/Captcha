@@ -1,8 +1,8 @@
 # Grille d’images type CAPTCHA
 
-Ce projet permet d’afficher une grille d’images semblable à un CAPTCHA, générée automatiquement à partir d’un dossier d’images.
+Ce projet permet d’afficher une grille d’images semblable à un CAPTCHA, généré automatiquement à partir d’un dossier d’images.
 
-Dans cette grille l'objectif est de séléctionné les images d'oiseaux
+Dans cette grille l'objectif est de séléctionner les images d'oiseaux
 
 Le script principal est main.py.
 
@@ -67,4 +67,4 @@ python main.py
 
 ## Remarque
 
-Assurez-vous que le dossier d’images contient au moins nb_col × nb_row images, sinon l’exécution échouera.
+Assurez-vous que le dossier d’images contienne au moins nb_col × nb_row images, sinon l’exécution échouera.
