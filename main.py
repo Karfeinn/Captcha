@@ -1,6 +1,8 @@
 import utils.bdd as bdd
 import utils.captcha as captcha
 
+# Fait par GRAN Justine et VOLKAERT Kylian
+
 filepath = "./images"
 nb_col = 3
 nb_row = 3

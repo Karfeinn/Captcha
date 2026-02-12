@@ -68,8 +68,26 @@ def create_grid(images_list:list, nb_col:int, nb_row:int, img_size:int, images_d
     :param images_list: List of images path to build the grid
     :type images_list: list
     """
+
+    nb_images = nb_col * nb_row
+
+    rng = shiny_image(nb_images)
+    
     # Read images from images_list
-    images = [cv2.resize(cv2.imread(img), dsize=[img_size, img_size]) for img in images_list]
+    
+    if rng :
+        images = []
+        for idx, img in enumerate(images_list):
+            if idx == rng :
+                image_shiny = cv2.resize(cv2.imread(img), dsize=[img_size, img_size])
+                b, r, g = cv2.split((image_shiny))
+                images.append(cv2.merge((r, g, b)))
+            else :
+                images.append(cv2.resize(cv2.imread(img), dsize=[img_size, img_size]))
+    else :
+        images = [cv2.resize(cv2.imread(img), dsize=[img_size, img_size]) for img in images_list]
+
+    
 
     # Build the grid
     row_list = []
@@ -112,9 +130,16 @@ def clic_event(event,x,y,flags,param):
                     cv2.imshow("CAPTCHA", param["grid"])
                     break
 
+def shiny_image(nb_max):
+    rng = random.randint(0,nb_max*3)
+    if rng <= nb_max :
+        return rng
+    return None
+
 
 def captcha(filepath, nb_col, nb_row, img_size, ponderation):
     images_list = choose_images(filepath, nb_col, nb_row, ponderation)
     images_dict = {image:0 for image in images_list}
     create_grid(images_list, nb_col, nb_row, img_size, images_dict)
     bdd.insert_events(images_dict)
+
